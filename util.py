@@ -1,13 +1,6 @@
-from telegram import (
-    BotCommand,
-    BotCommandScopeChat,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    MenuButtonCommands,
-    MenuButtonDefault,
-    Message,
-    Update,
-)
+from telegram import (BotCommand, BotCommandScopeChat, InlineKeyboardButton,
+                      InlineKeyboardMarkup, MenuButtonCommands,
+                      MenuButtonDefault, Message, Update)
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes
 

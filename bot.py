@@ -1,13 +1,8 @@
 import os
 
 from dotenv import load_dotenv
-from telegram.ext import (
-    ApplicationBuilder,
-    CallbackQueryHandler,
-    CommandHandler,
-    MessageHandler,
-    filters,
-)
+from telegram.ext import (ApplicationBuilder, CallbackQueryHandler,
+                          CommandHandler, MessageHandler, filters)
 
 from gpt import *
 from util import *
@@ -71,6 +66,7 @@ async def profile(update, context):
     """
     Обрабатывает команду /profile.
     Устанавливает режим диалога на 'profile' и отображает информацию о генерации профиля.
+    Очищает данные пользователя и запрашивает возраст.
     """
     dialog.mode = "profile"
     text = load_message("profile")
@@ -78,8 +74,8 @@ async def profile(update, context):
     await send_photo(update, context, "profile")
     await send_text(update, context, text)
 
-    dialog.user.clear()
-    dialog.count = 0
+    dialog.user.clear()  # Очищаем данные пользователя
+    dialog.count = 0  # Сбрасываем счетчик вопросов
 
     await send_text(update, context, "Сколько вам лет?")
 
@@ -88,6 +84,7 @@ async def opener(update, context):
     """
     Обрабатывает команду /opener.
     Устанавливает режим диалога на 'opener' и отображает информацию о сообщении для знакомства.
+    Очищает данные пользователя и запрашивает имя девушки.
     """
     dialog.mode = "opener"
     text = load_message("opener")
@@ -95,8 +92,8 @@ async def opener(update, context):
     await send_photo(update, context, "opener")
     await send_text(update, context, text)
 
-    dialog.user.clear()
-    dialog.count = 0
+    dialog.user.clear()  # Очищаем данные пользователя
+    dialog.count = 0  # Сбрасываем счетчик вопросов
 
     await send_text(update, context, "Имя девушки?")
 
@@ -128,6 +125,7 @@ async def message(update, context):
     """
     Обрабатывает команду /message.
     Устанавливает режим диалога на 'message' и отображает информацию о переписке от имени пользователя.
+    Очищает список сообщений.
     """
     dialog.mode = "message"
     text = load_message("message")
@@ -142,13 +140,14 @@ async def message(update, context):
             "message_date": "Пригласить на свидание",
         },
     )
-    dialog.list.clear()
+    dialog.list.clear()  # Очищаем список сообщений
 
 
 async def hello(update, context):
     """
     Обрабатывает текстовые сообщения от пользователя.
     В зависимости от режима диалога, вызывает соответствующую функцию.
+    Если режим не установлен, отправляет приветственное сообщение.
     """
     if dialog.mode == "gpt":
         await gpt_dialog(update, context)
@@ -170,6 +169,7 @@ async def gpt_dialog(update, context):
     """
     Обрабатывает текстовые сообщения в режиме 'gpt'.
     Отправляет запрос к ChatGPT и возвращает ответ пользователю.
+    Если текст пустой, запрашивает ввод.
     """
     try:
         text = update.message.text
@@ -204,16 +204,17 @@ async def message_dialog(update, context):
     Сохраняет сообщения пользователя в списке для дальнейшего использования.
     """
     text = update.message.text
-    dialog.list.append(text)
+    dialog.list.append(text)  # Добавляем сообщение в список
 
 
 async def profile_dialog(update, context):
     """
     Обрабатывает текстовые сообщения в режиме 'profile'.
     Сохраняет информацию о пользователе и задает последовательные вопросы.
+    После завершения опроса генерирует профиль с помощью ChatGPT.
     """
     text = update.message.text
-    dialog.count += 1
+    dialog.count += 1  # Увеличиваем счетчик вопросов
 
     if dialog.count == 1:
         dialog.user["age"] = text
@@ -248,7 +249,7 @@ async def opener_dialog(update, context):
     Сохраняет информацию о девушке и генерирует первое сообщение.
     """
     text = update.message.text
-    dialog.count += 1
+    dialog.count += 1  # Увеличиваем счетчик вопросов
 
     if dialog.count == 1:
         dialog.user["name"] = text
